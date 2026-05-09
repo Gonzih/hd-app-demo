@@ -1,0 +1,23 @@
+# TODO
+
+- [ ] Create git branch feat/mockup-app
+- [ ] Scaffold Vite+React+TS project
+- [ ] Install dependencies (react-router-dom, tailwindcss, @tailwindcss/vite)
+- [ ] Configure vite.config.ts (base path + tailwind plugin)
+- [ ] Configure index.html (Google Fonts)
+- [ ] Write index.css (base styles, glass effect utilities)
+- [ ] Write App.tsx (HashRouter + routes)
+- [ ] Write BottomNav.tsx
+- [ ] Write AuthScreen.tsx
+- [ ] Write Bodygraph.tsx (SVG with 9 centers + 3 channels)
+- [ ] Write HomeScreen.tsx
+- [ ] Write ChatScreen.tsx
+- [ ] Write JournalScreen.tsx
+- [ ] Write DreamsScreen.tsx
+- [ ] Write QuestsScreen.tsx
+- [ ] Create .github/workflows/deploy.yml
+- [ ] Run npm run build — verify success
+- [ ] Git diff --staged review
+- [ ] Git commit + push
+- [ ] Create PR + merge
+- [ ] Enable GitHub Pages
