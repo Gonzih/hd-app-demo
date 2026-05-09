@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 const infoCards = [
   { label: 'Type', value: 'Generator' },
-  { label: 'Strategy', value: 'To Respond' },
-  { label: 'Authority', value: 'Sacral' },
+  { label: 'Strategy', value: 'Wait to Respond' },
+  { label: 'Authority', value: 'Emotional' },
   { label: 'Profile', value: '2/4' },
   { label: 'Signature', value: 'Satisfaction' },
   { label: 'Not-Self', value: 'Frustration' },
@@ -69,8 +69,8 @@ export default function HomeScreen() {
       {/* Header */}
       <div className="px-5 pt-14 pb-4">
         <p className="font-inter text-amber-700 text-sm font-medium mb-0.5">Good morning</p>
-        <h1 className="font-playfair text-3xl font-bold text-amber-900 leading-tight">Sarah Chen</h1>
-        <p className="font-inter text-amber-800/60 text-sm mt-1">Generator · 2/4 · Split Definition</p>
+        <h1 className="font-playfair text-3xl font-bold text-amber-900 leading-tight">Maksim</h1>
+        <p className="font-inter text-amber-800/60 text-sm mt-1">Generator · 2/4 · Single Definition</p>
       </div>
 
       {/* Bodygraph */}
@@ -79,7 +79,7 @@ export default function HomeScreen() {
           <div className="flex items-center justify-between mb-3">
             <span className="font-playfair text-amber-900 font-semibold text-lg">Your Bodygraph</span>
             <span className="font-inter text-xs text-amber-700 bg-amber-100/60 px-2.5 py-1 rounded-full">
-              Right Angle Cross of Tension
+              Cross of Planning (9/16 | 40/37)
             </span>
           </div>
           <Bodygraph />
