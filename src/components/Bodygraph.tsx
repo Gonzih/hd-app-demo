@@ -1,157 +1,211 @@
-// Human Design Bodygraph SVG
-// 9 centers at correct relative positions with channels and gate labels
+// Accurate Human Design Bodygraph — Maksim's real chart data
 
-interface Center {
+const CHART = {
+  definedCenters: ['Ego', 'G', 'Root', 'Sacral', 'SolarPlexus', 'Spleen'],
+  personalityGates: [9, 16, 49, 4, 26, 61, 1],
+  designGates: [40, 37, 30, 29, 6, 18, 57, 47, 58, 44],
+  bothGates: [52, 38, 10],
+}
+
+const allActiveGates = new Set([
+  ...CHART.personalityGates,
+  ...CHART.designGates,
+  ...CHART.bothGates,
+])
+
+function gateColor(gate: number): string {
+  if (CHART.bothGates.includes(gate)) return '#8B5CF6'
+  if (CHART.personalityGates.includes(gate)) return '#1a1a1a'
+  if (CHART.designGates.includes(gate)) return '#ef4444'
+  return 'transparent'
+}
+
+function channelColor(g1: number, g2: number): string {
+  const isBoth = (g: number) => CHART.bothGates.includes(g)
+  const isPers = (g: number) => CHART.personalityGates.includes(g)
+  const isDes  = (g: number) => CHART.designGates.includes(g)
+  if (isBoth(g1) || isBoth(g2)) return '#8B5CF6'
+  if (isPers(g1) && isPers(g2)) return '#1a1a1a'
+  if (isDes(g1) || isDes(g2)) return '#ef4444'
+  return '#8B5CF6'
+}
+
+type CenterDef = {
   id: string
   label: string
   shape: 'square' | 'triangle-up' | 'triangle-down' | 'diamond'
-  x: number
-  y: number
+  cx: number
+  cy: number
+  w?: number
+  h?: number
+  size?: number
   defined: boolean
-  gateLabel?: string
 }
 
-const CENTERS: Center[] = [
-  { id: 'head',   label: 'Head',   shape: 'triangle-up',   x: 160, y: 30,  defined: false },
-  { id: 'ajna',   label: 'Ajna',   shape: 'triangle-down', x: 160, y: 100, defined: false },
-  { id: 'throat', label: 'Throat', shape: 'square',        x: 160, y: 175, defined: true  },
-  { id: 'g',      label: 'G',      shape: 'diamond',       x: 160, y: 255, defined: true  },
-  { id: 'heart',  label: 'Heart',  shape: 'triangle-up',   x: 230, y: 240, defined: false },
-  { id: 'sacral', label: 'Sacral', shape: 'square',        x: 160, y: 335, defined: true  },
-  { id: 'spleen', label: 'Spleen', shape: 'triangle-up',   x: 85,  y: 265, defined: false },
-  { id: 'sp',     label: 'S.Plx',  shape: 'triangle-up',   x: 240, y: 305, defined: true  },
-  { id: 'root',   label: 'Root',   shape: 'square',        x: 160, y: 415, defined: false },
+const CENTERS: CenterDef[] = [
+  { id: 'Head',        label: 'Head',  shape: 'triangle-up',   cx: 200, cy: 45,  size: 46, defined: false },
+  { id: 'Ajna',        label: 'Ajna',  shape: 'triangle-down', cx: 200, cy: 115, size: 46, defined: false },
+  { id: 'Throat',      label: 'Throat',shape: 'square',        cx: 200, cy: 195, w: 70, h: 44, defined: false },
+  { id: 'G',           label: 'G',     shape: 'diamond',       cx: 200, cy: 275, size: 56, defined: true  },
+  { id: 'Ego',         label: 'Heart', shape: 'triangle-up',   cx: 278, cy: 248, size: 36, defined: true  },
+  { id: 'Sacral',      label: 'Sacral',shape: 'square',        cx: 200, cy: 360, w: 88, h: 50, defined: true  },
+  { id: 'SolarPlexus', label: 'S.Plx', shape: 'triangle-down', cx: 278, cy: 340, size: 52, defined: true  },
+  { id: 'Spleen',      label: 'Spleen',shape: 'triangle-up',   cx: 122, cy: 310, size: 52, defined: true  },
+  { id: 'Root',        label: 'Root',  shape: 'square',        cx: 200, cy: 450, w: 70, h: 44, defined: true  },
 ]
 
-// Channels: [from center id, to center id, label]
-const CHANNELS = [
-  { from: 'throat', to: 'sacral', label: '20-34' },  // Charisma
-  { from: 'spleen', to: 'g',      label: '57-10' },  // Brainwave
-  { from: 'sp',     to: 'g',      label: '35-36' },  // Transitoriness (sp = solar plexus → g center, approximation for visual)
+// [gate, cx, cy] — positions on the bodygraph
+const GATE_POSITIONS: [number, number, number][] = [
+  // Head-Ajna
+  [64, 175, 62], [61, 200, 62], [63, 225, 62],
+  [47, 178, 98], [24, 200, 98], [4,  222, 98],
+  // Ajna-Throat
+  [17, 174, 148], [11, 187, 148], [43, 200, 143], [23, 213, 148], [62, 226, 148],
+  [16, 178, 175],
+  // Throat
+  [31, 168, 193], [8,  184, 193], [33, 200, 193], [45, 216, 193], [12, 232, 193],
+  [35, 168, 212], [56, 184, 212], [20, 216, 212],
+  // Throat-G
+  [7,  175, 245], [1,  200, 245], [13, 225, 245],
+  // G Center
+  [2,  185, 268], [46, 200, 268], [15, 215, 268],
+  [10, 175, 290], [25, 200, 290],
+  // Ego/Heart
+  [26, 261, 240], [51, 295, 248], [40, 278, 220],
+  // G-Sacral
+  [5,  184, 320], [14, 200, 315], [29, 216, 320],
+  [34, 184, 345], [27, 200, 345], [59, 216, 345],
+  // Sacral
+  [9,  173, 365], [3,  188, 365], [42, 204, 365], [60, 220, 365],
+  // Root
+  [58, 172, 438], [38, 188, 438], [54, 204, 438], [53, 220, 438], [52, 236, 438],
+  // Solar Plexus
+  [36, 256, 320], [22, 294, 320],
+  [30, 261, 340], [55, 295, 340],
+  [49, 261, 358], [19, 295, 358],
+  [37, 294, 376], [6,  261, 376],
+  // Spleen
+  [57, 108, 295], [44, 90,  310],
+  [50, 108, 325], [32, 108, 342],
+  [28, 90,  350], [18, 108, 362],
 ]
 
-function getCenterAnchor(c: Center): [number, number] {
-  const s = 22
-  switch (c.shape) {
-    case 'square':        return [c.x, c.y]
-    case 'triangle-up':   return [c.x, c.y + s * 0.3]
-    case 'triangle-down': return [c.x, c.y - s * 0.3]
-    case 'diamond':       return [c.x, c.y]
-  }
+// Deduplicate — keep first occurrence
+const gateMap = new Map<number, [number, number]>()
+for (const [gate, cx, cy] of GATE_POSITIONS) {
+  if (!gateMap.has(gate)) gateMap.set(gate, [cx, cy])
 }
 
-function renderShape(c: Center) {
-  const s = 24
-  const fill = c.defined ? '#d4956a' : 'none'
-  const stroke = c.defined ? '#c17b45' : 'rgba(193,123,69,0.5)'
-  const sw = 1.5
+const ACTIVE_CHANNELS: [number, number][] = [
+  [10, 57],
+  [18, 58],
+  [26, 44],
+  [37, 40],
+  [9,  52],
+]
 
-  switch (c.shape) {
-    case 'square':
-      return (
-        <rect
-          x={c.x - s} y={c.y - s}
-          width={s * 2} height={s * 2}
-          rx={4}
-          fill={fill} stroke={stroke} strokeWidth={sw}
-        />
-      )
-    case 'triangle-up': {
-      const pts = `${c.x},${c.y - s} ${c.x + s * 1.1},${c.y + s * 0.7} ${c.x - s * 1.1},${c.y + s * 0.7}`
-      return <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sw} />
-    }
-    case 'triangle-down': {
-      const pts = `${c.x},${c.y + s} ${c.x + s * 1.1},${c.y - s * 0.7} ${c.x - s * 1.1},${c.y - s * 0.7}`
-      return <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sw} />
-    }
-    case 'diamond': {
-      const d2 = s * 1.3
-      const pts = `${c.x},${c.y - d2} ${c.x + d2},${c.y} ${c.x},${c.y + d2} ${c.x - d2},${c.y}`
-      return <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sw} />
-    }
+function renderCenter(c: CenterDef) {
+  const fill     = c.defined ? 'rgba(217,149,100,0.85)' : 'none'
+  const stroke   = c.defined ? 'rgba(193,123,69,0.9)' : 'rgba(255,255,255,0.5)'
+  const sw       = 2
+  const textFill = c.defined ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.65)'
+
+  if (c.shape === 'square') {
+    const hw = (c.w ?? 70) / 2
+    const hh = (c.h ?? 44) / 2
+    return (
+      <g key={c.id}>
+        <rect x={c.cx - hw} y={c.cy - hh} width={c.w ?? 70} height={c.h ?? 44}
+          rx={4} fill={fill} stroke={stroke} strokeWidth={sw} />
+        <text x={c.cx} y={c.cy + 4} textAnchor="middle" fontSize="9"
+          fill={textFill} fontFamily="monospace" fontWeight="700">{c.label}</text>
+      </g>
+    )
   }
-}
-
-function getCenterById(id: string): Center | undefined {
-  return CENTERS.find(c => c.id === id)
+  if (c.shape === 'triangle-up') {
+    const s = c.size ?? 46
+    const pts = `${c.cx},${c.cy - s * 0.67} ${c.cx + s * 0.78},${c.cy + s * 0.45} ${c.cx - s * 0.78},${c.cy + s * 0.45}`
+    return (
+      <g key={c.id}>
+        <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sw} />
+        <text x={c.cx} y={c.cy + s * 0.22} textAnchor="middle" fontSize="8"
+          fill={textFill} fontFamily="monospace" fontWeight="700">{c.label}</text>
+      </g>
+    )
+  }
+  if (c.shape === 'triangle-down') {
+    const s = c.size ?? 46
+    const pts = `${c.cx},${c.cy + s * 0.67} ${c.cx + s * 0.78},${c.cy - s * 0.45} ${c.cx - s * 0.78},${c.cy - s * 0.45}`
+    return (
+      <g key={c.id}>
+        <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sw} />
+        <text x={c.cx} y={c.cy + s * 0.1} textAnchor="middle" fontSize="8"
+          fill={textFill} fontFamily="monospace" fontWeight="700">{c.label}</text>
+      </g>
+    )
+  }
+  if (c.shape === 'diamond') {
+    const s = c.size ?? 56
+    const pts = `${c.cx},${c.cy - s} ${c.cx + s},${c.cy} ${c.cx},${c.cy + s} ${c.cx - s},${c.cy}`
+    return (
+      <g key={c.id}>
+        <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sw} />
+        <text x={c.cx} y={c.cy + 4} textAnchor="middle" fontSize="9"
+          fill={textFill} fontFamily="monospace" fontWeight="700">{c.label}</text>
+      </g>
+    )
+  }
+  return null
 }
 
 export default function Bodygraph() {
-  const centerMap = Object.fromEntries(CENTERS.map(c => [c.id, c]))
-
   return (
     <svg
-      viewBox="0 0 320 470"
-      className="w-full max-w-[280px] mx-auto"
-      style={{ filter: 'drop-shadow(0 4px 24px rgba(193,123,69,0.15))' }}
+      viewBox="0 0 400 510"
+      className="w-full max-w-[340px] mx-auto"
+      style={{ filter: 'drop-shadow(0 4px 24px rgba(139,92,246,0.12))' }}
     >
-      {/* Channel lines */}
-      {CHANNELS.map((ch) => {
-        const from = getCenterById(ch.from)
-        const to = getCenterById(ch.to)
-        if (!from || !to) return null
-        const [x1, y1] = getCenterAnchor(from)
-        const [x2, y2] = getCenterAnchor(to)
-        const mx = (x1 + x2) / 2
-        const my = (y1 + y2) / 2
+      {/* Channel lines — drawn first so centers appear on top */}
+      {ACTIVE_CHANNELS.map(([g1, g2]) => {
+        const p1 = gateMap.get(g1)
+        const p2 = gateMap.get(g2)
+        if (!p1 || !p2) return null
+        const color = channelColor(g1, g2)
         return (
-          <g key={ch.label}>
-            <line
-              x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke="#d4956a" strokeWidth={2.5}
-              strokeLinecap="round"
-            />
-            <text
-              x={mx} y={my - 4}
-              textAnchor="middle"
-              fontSize="8"
-              fill="#c17b45"
-              fontFamily="Inter, sans-serif"
-              fontWeight="600"
-            >
-              {ch.label}
-            </text>
-          </g>
+          <line
+            key={`ch-${g1}-${g2}`}
+            x1={p1[0]} y1={p1[1]} x2={p2[0]} y2={p2[1]}
+            stroke={color} strokeWidth={4} strokeLinecap="round"
+            opacity={0.85}
+          />
         )
       })}
 
       {/* Centers */}
-      {CENTERS.map((c) => (
-        <g key={c.id}>
-          {renderShape(c)}
-          <text
-            x={c.x} y={c.y + 4}
-            textAnchor="middle"
-            fontSize={c.shape === 'diamond' ? '9' : '8'}
-            fill={c.defined ? 'rgba(255,255,255,0.95)' : 'rgba(193,123,69,0.8)'}
-            fontFamily="Inter, sans-serif"
-            fontWeight="600"
-          >
-            {c.label}
-          </text>
-        </g>
-      ))}
+      {CENTERS.map(renderCenter)}
 
-      {/* Decorative vertical spine */}
-      <line
-        x1="160" y1="52" x2="160" y2="160"
-        stroke="rgba(212,149,106,0.3)" strokeWidth="1" strokeDasharray="3,4"
-      />
-      <line
-        x1="160" y1="200" x2="160" y2="235"
-        stroke="rgba(212,149,106,0.3)" strokeWidth="1" strokeDasharray="3,4"
-      />
-      <line
-        x1="160" y1="278" x2="160" y2="310"
-        stroke="rgba(212,149,106,0.3)" strokeWidth="1" strokeDasharray="3,4"
-      />
-      <line
-        x1="160" y1="358" x2="160" y2="390"
-        stroke="rgba(212,149,106,0.3)" strokeWidth="1" strokeDasharray="3,4"
-      />
+      {/* Gate dots + labels for active gates only */}
+      {Array.from(gateMap.entries()).map(([gate, [cx, cy]]) => {
+        if (!allActiveGates.has(gate)) return null
+        const color = gateColor(gate)
+        return (
+          <g key={`gate-${gate}`}>
+            <circle cx={cx} cy={cy} r={5.5} fill={color} stroke="#fff" strokeWidth={1.2} />
+            <text x={cx + 8} y={cy + 3} fontSize="7" fill={color}
+              fontFamily="monospace" fontWeight="700">{gate}</text>
+          </g>
+        )
+      })}
 
-      {/* Center map reference (unused variable suppressor) */}
-      {Object.keys(centerMap).length === 0 && null}
+      {/* Legend */}
+      <g transform="translate(10, 492)">
+        <circle cx={6} cy={6} r={5} fill="#1a1a1a" stroke="#fff" strokeWidth={1} />
+        <text x={14} y={10} fontSize="8" fill="rgba(255,255,255,0.6)" fontFamily="monospace">Conscious</text>
+        <circle cx={86} cy={6} r={5} fill="#ef4444" stroke="#fff" strokeWidth={1} />
+        <text x={94} y={10} fontSize="8" fill="rgba(255,255,255,0.6)" fontFamily="monospace">Unconscious</text>
+        <circle cx={186} cy={6} r={5} fill="#8B5CF6" stroke="#fff" strokeWidth={1} />
+        <text x={194} y={10} fontSize="8" fill="rgba(255,255,255,0.6)" fontFamily="monospace">Both</text>
+      </g>
     </svg>
   )
 }
