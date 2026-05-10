@@ -23,6 +23,7 @@ export default function Bodygraph() {
   return (
     <BodyGraph
       chart={CHART_DATA}
+      options={{ theme: 'canonical' }}
       style={{ maxWidth: 400, display: 'block', margin: '0 auto' }}
     />
   )
